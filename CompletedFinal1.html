@@ -1,0 +1,959 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multi-Tasking Staff Online Exam</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: radial-gradient(1200px 700px at 10% 10%, #eaf3ff 0%, #f7f9fc 45%, #ffffff 100%);
+            min-height: 100vh;
+        }
+
+        .app-card {
+            border: 0;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(16,24,40,0.10);
+            overflow: hidden;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0d6efd, #20c997);
+            color: #fff;
+            padding: 20px 22px;
+        }
+
+        .badge-soft {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+        }
+
+        .q-card {
+            border: 1px solid #eef1f6;
+            border-radius: 14px;
+            padding: 16px;
+            background: #fff;
+        }
+
+        .option {
+            border: 1px solid #e9edf5;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.15s ease-in-out;
+            user-select: none;
+        }
+
+            .option:hover {
+                border-color: #0d6efd33;
+                background: #f6faff;
+            }
+
+            .option.selected {
+                border-color: #0d6efd;
+                background: #eaf2ff;
+            }
+
+        .muted-small {
+            font-size: 0.92rem;
+            color: #6b7280;
+        }
+
+        * {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .important-msg {
+            color: #dc3545;
+            font-weight: 700;
+            padding-left: 10px;
+            padding-top: 6px;
+            animation: pulseWarn 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulseWarn {
+            0%,100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.02);
+                opacity: 0.85;
+            }
+        }
+
+        .pnf-wrap {
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 12px;
+        }
+
+        .pnf-card {
+            width: min(680px, 96vw);
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(16,24,40,0.10);
+            padding: 28px;
+            text-align: center;
+        }
+
+        .pnf-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .pnf-sub {
+            color: #6b7280;
+        }
+
+        .app-footer {
+            color: #0d47a1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Page Not Found -->
+    <div id="pageNotFound" class="d-none">
+        <div class="pnf-wrap">
+            <div class="pnf-card">
+                <div class="pnf-title">Page Not Found</div>
+                <div class="pnf-sub">
+                    This exam link is no longer available because you already attempted the exam.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div id="mainApp">
+        <div class="container py-4 py-md-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-9 col-xl-8">
+                    <div class="card app-card">
+
+                        <div class="hero">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <div>
+                                    <h3 class="mb-1">Multi-Tasking Staff Exam</h3>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <span class="badge badge-soft rounded-pill px-3 py-2" id="timerBadge">Time: 20:00</span>
+                                    <span class="badge badge-soft rounded-pill px-3 py-2" id="progressBadge">0 / 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-3 p-md-4">
+
+                            <!-- Step 1 -->
+                            <div id="stepDetails">
+                                <h5 class="mb-3">Candidate Details</h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Name</label>
+                                        <input class="form-control" id="name" autocomplete="off" placeholder="Enter name" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Phone</label>
+                                        <input class="form-control" id="phone" autocomplete="off" placeholder="10-digit mobile" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Email</label>
+                                        <input class="form-control" id="email" autocomplete="off" placeholder="you@example.com" />
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    <strong>Note:</strong> Copy/Paste, right-click, tab switch or minimize will show warning message.
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button class="btn btn-primary px-4" id="startBtn">Start Exam</button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div id="stepExam" class="d-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="muted-small">
+                                        Question <span class="fw-semibold" id="qIndex">1</span> of <span class="fw-semibold" id="qTotal">0</span>
+                                    </div>
+                                    <div class="muted-small">
+                                        Status: <span class="fw-semibold" id="saveStatus">In progress</span>
+                                    </div>
+                                </div>
+
+                                <div class="q-card mb-3">
+                                    <div class="fw-semibold mb-2" id="questionText"></div>
+                                    <div class="vstack gap-2" id="optionsWrap"></div>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-outline-secondary" id="prevBtn">Previous</button>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary" id="nextBtn">Next</button>
+                                        <button class="btn btn-success px-4" id="submitBtn" disabled>Submit</button>
+                                    </div>
+                                </div>
+
+                                <div class="muted-small mt-3">
+                                    Security monitor: <span class="fw-semibold" id="monitorText">Active</span>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div id="stepResult" class="d-none text-center">
+                                <h4 class="mb-2">Submitted ✅</h4>
+                                <p class="muted-small mb-3">Your response has been saved.</p>
+
+                                <div class="alert alert-success fw-semibold" id="submitMsg">Submitting...</div>
+
+                                <div class="mt-3 d-flex justify-content-center gap-3">
+                                    <button class="btn btn-primary" id="downloadPdfBtn" disabled>Download PDF</button>
+                                    <button class="btn btn-danger" id="closeBtn" disabled>Close</button>
+                                </div>
+
+                                <div class="muted-small mt-3">
+                                    Note: Some browsers block auto-close. If close doesn’t work, please close the tab manually.
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer class="app-footer text-center mt-5">
+                        <div class="container py-3">
+                            <div class="fw-semibold">Developed & Designed by NIC</div>
+                            <div class="small text-muted">© 2026 National Informatics Centre. All Rights Reserved.</div>
+                        </div>
+                    </footer>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div class="modal fade" id="instructionsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exam Instructions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        Please read the exam instructions carefully before starting.
+                    </div>
+
+                    <ul class="mb-3" id="instructionList">
+                        <li><strong>Exam Duration:</strong> 20 minutes</li>
+                        <li><strong>Total Questions:</strong> 20</li>
+                        <li><strong>Marks:</strong> 2 marks for each question</li>
+                        <li><strong>Objection:</strong> I don't have any objection once I have submit the exam and Result</li>
+                        <li><strong>Total Marks:</strong> 40</li>
+                        <li><strong>Warning:</strong> Copy/Paste, right click, tab switch/minimize will show warning.</li>
+                        <li class="important-msg">
+                            <strong>Important Message:</strong>
+                            During Exam If You try Exit The Full Screen Your Exam will submit Automatically so We are not Responsible.
+                        </li>
+                    </ul>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="agreeCheck">
+                        <label class="form-check-label" for="agreeCheck">
+                            Yes, I have read all the instruction carefully.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" id="continueBtn" disabled>Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Modal -->
+    <div class="modal fade" id="warningModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Warning</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-0" id="warningText">Warning...</div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="warningOkBtn" type="button">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Confirm Modal -->
+    <div class="modal fade" id="submitConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Submission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-0">
+                        Are you sure you want to submit the exam?
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="submitCancelBtn">Cancel</button>
+                    <button type="button" class="btn btn-success" id="submitOkBtn">Yes, Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        /* =========================
+           CONFIG
+        ========================= */
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwLXTyEN0kD1X_uFii0ZQIq_tLmO4zuQPC3fjkv_sOsVWDRzY8VRM-5UxXtRaxcxP05/exec"; // ✅ put your deployed Apps Script URL
+        const SECRET = "mysecret123";
+
+        const EXAM_DURATION_MIN = 20;
+        const MARKS_PER_QUESTION = 2;
+        const PASS_PERCENTAGE = 40;
+
+        const EXAM_ID = "MTS-EXAM-V1";
+        function attemptKey() { return `attempted_${EXAM_ID}`; }
+
+        const { jsPDF } = window.jspdf;
+
+        /* =========================
+           QUESTIONS (MASTER LIST)
+        ========================= */
+        const QUESTION_BANK = [
+            { id: "q1", question: "LAN, WAN and MAN are computer networks covering different areas. Their first alphabets L, W and M respectively stand for ?", options: ["Local, World and Middle", "Long, Wireless and Metropolitan", "Local, Wide and Metropolitan", "Local, Wireless and Maximum"], correctIndex: 2 },
+            { id: "q2", question: "Which of the following is not a conventional web-based search engine ?", options: ["Android", "Bing", "Google", "Yahoo"], correctIndex: 0 },
+            { id: "q3", question: "USB is the acronym for ?", options: ["Uniform Service Broadcasting", "Unique Solution Bus", "Universal Serial Bus", "Universal Service Broadcasting"], correctIndex: 2 },
+            { id: "q4", question: "Out of the following options, which one can’t be considered as a functionality of computer?", options: ["Takes data as input", "Process data", "Manipulate data", "Create data"], correctIndex: 3 },
+            { id: "q5", question: "What is the function of Recycle Bin?", options: ["Store deleted file", "Store temporary file", "Store corrupted file", "Store Document file"], correctIndex: 0 },
+            { id: "q6", question: "Which command does not exist in DOS?", options: ["Dir", "Sum", "Cls", "Cd"], correctIndex: 1 },
+            { id: "q7", question: "Data can be stored in ?", options: ["Floppy", "Hard disk", "Tape", "All"], correctIndex: 3 },
+            { id: "q8", question: "What is the full form of ISP?", options: ["Intranet service provider", "International service provider", "Internet service provider", "Internal service provider"], correctIndex: 2 },
+            { id: "q9", question: "In which data will be erased as the power supply is off?", options: ["RAM", "ROM", "PROM", "EPROM"], correctIndex: 0 },
+            { id: "q10", question: "How many sheets are there in the excel workbook by default?", options: ["3", "Many", "2", "1"], correctIndex: 0 },
+            { id: "q11", question: "What is the function of the network neighbourhood?", options: ["Identify who is living near to you", "Navigate shared computers and folder in network", "Send message to neighbouring computers", "None of above"], correctIndex: 1 },
+            { id: "q12", question: "In which O/S can you give the smallest file name?", options: ["PS/2", "Windows", "DOS", "Windows NT"], correctIndex: 2 },
+            { id: "q13", question: "Which device cannot be shared in the network?", options: ["Floppy", "Computer", "Keyword", "Printer"], correctIndex: 2 },
+            { id: "q14", question: "What is the function of Radio buttons?", options: ["To select multiple option", "To select single option among available options", "To select all options provided", "All of the above"], correctIndex: 1 },
+            { id: "q15", question: "Which data type doesn't exist in access?", options: ["Number", "Memo", "Picture", "Text"], correctIndex: 2 },
+            { id: "q16", question: "Which of the following control is known as a drop-down list?", options: ["List", "None", "Text box", "Combo list"], correctIndex: 3 },
+            { id: "q17", question: "What will do by filter in Excel?", options: ["Display the records that meet the criteria", "Display only one record to delete", "Modify all the records at once", "All of above"], correctIndex: 0 },
+            { id: "q18", question: "What is the short-cut key to hide a row in Excel?", options: ["Ctrl+F9", "Ctrl+9", "Shift+F9", "Ctrl+Shift+9"], correctIndex: 1 },
+            { id: "q19", question: "A mobile App and website portal from where you can download all books of NCERT for free:", options: ["e-Pusthak", "udaan", "swayam.com", "e-Pathshala"], correctIndex: 3 },
+            { id: "q20", question: "Which of the following Application was recently launched by the Central Government for Instant Messaging?", options: ["UTS", "Sandes", "Umang", "MADAD"], correctIndex: 1 }
+        ];
+
+        /* =========================
+           UI HELPERS
+        ========================= */
+        function showPageNotFound() {
+            document.getElementById("mainApp").classList.add("d-none");
+            document.getElementById("pageNotFound").classList.remove("d-none");
+        }
+        function showMain() {
+            document.getElementById("pageNotFound").classList.add("d-none");
+            document.getElementById("mainApp").classList.remove("d-none");
+        }
+
+        /* =========================
+           STATE
+        ========================= */
+        let questions = [];          // shuffled copy for exam
+        let currentIndex = 0;
+        let answers = {};            // { qid: optionIndex }
+        let endTime = null;
+        let timerInterval = null;
+        let examActive = false;
+        let submitted = false;
+
+        let minimizeViolations = 0;
+        let devToolsDetected = false;
+        let exitWarnedOnce = false;
+
+        // snapshot for correct PDF after submit
+        let lastSubmission = null;
+
+        const MAX_MINIMIZE_VIOLATIONS = 3;
+
+        /* =========================
+           MODALS
+        ========================= */
+        const instructionsModal = new bootstrap.Modal(document.getElementById("instructionsModal"), { backdrop: "static", keyboard: false });
+        const warningModalEl = document.getElementById("warningModal");
+        const warningModal = new bootstrap.Modal(warningModalEl, { backdrop: "static", keyboard: false });
+
+        const submitConfirmEl = document.getElementById("submitConfirmModal");
+        const submitConfirmModal = new bootstrap.Modal(submitConfirmEl, { backdrop: "static", keyboard: false });
+
+        let warningShowing = false;
+        function showWarning(message) {
+            if (!examActive || submitted) return;
+            if (warningShowing) return;
+            warningShowing = true;
+            document.getElementById("warningText").innerText = message;
+            warningModal.show();
+        }
+        document.getElementById("warningOkBtn").addEventListener("click", () => warningModal.hide());
+        warningModalEl.addEventListener("hidden.bs.modal", () => { warningShowing = false; });
+
+        /* =========================
+           SERVER CHECK
+        ========================= */
+        async function serverCheckAttempt(phone, email) {
+            const url = `${WEB_APP_URL}?action=check&secret=${encodeURIComponent(SECRET)}&phone=${encodeURIComponent(phone || "")}&email=${encodeURIComponent(email || "")}`;
+            const res = await fetch(url, { cache: "no-store" });
+            const json = await res.json().catch(() => ({}));
+            if (!json.ok) return { ok: false, attempted: false };
+            return { ok: true, attempted: !!json.attempted };
+        }
+
+        /* =========================
+           SECURITY
+        ========================= */
+        async function enableFullScreen() {
+            try {
+                const elem = document.documentElement;
+                if (!document.fullscreenElement && elem.requestFullscreen) {
+                    await elem.requestFullscreen();
+                }
+            } catch (e) { }
+        }
+
+        document.addEventListener("fullscreenchange", () => {
+            if (!examActive || submitted) return;
+            if (!document.fullscreenElement) autoSubmit("Full screen exited. Exam auto-submitted.");
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (!examActive || submitted) return;
+            const key = (e.key || "").toUpperCase();
+            const blocked =
+                key === "F12" ||
+                (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(key)) ||
+                (e.ctrlKey && ["U", "S"].includes(key));
+            if (blocked) {
+                e.preventDefault();
+                showWarning("Developer tools are not allowed.");
+            }
+        });
+
+        setInterval(() => {
+            if (!examActive || submitted) return;
+            const threshold = 160;
+            const devOpen =
+                window.outerWidth - window.innerWidth > threshold ||
+                window.outerHeight - window.innerHeight > threshold;
+            if (devOpen && !devToolsDetected) {
+                devToolsDetected = true;
+                autoSubmit("Developer tools detected. Exam auto-submitted.");
+            }
+        }, 1000);
+
+        let lastViolationAt = 0;
+        const VIOLATION_COOLDOWN_MS = 1200;
+
+        function minimizeViolation(reason) {
+            if (!examActive || submitted) return;
+            if (warningShowing) return;
+
+            const now = Date.now();
+            if (now - lastViolationAt < VIOLATION_COOLDOWN_MS) return;
+            lastViolationAt = now;
+
+            minimizeViolations++;
+            showWarning(`${reason} (${minimizeViolations}/${MAX_MINIMIZE_VIOLATIONS})`);
+            if (minimizeViolations >= MAX_MINIMIZE_VIOLATIONS) autoSubmit("Auto-submitted due to multiple violations.");
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (!examActive || submitted) return;
+            if (document.visibilityState === "hidden") minimizeViolation("Tab switched / minimized");
+        });
+
+        window.addEventListener("beforeunload", (e) => {
+            if (!examActive || submitted) return;
+
+            if (!exitWarnedOnce) {
+                exitWarnedOnce = true;
+                showWarning("If you try exit this exam your exam will submit automatically.");
+                e.preventDefault();
+                e.returnValue = "";
+                return;
+            }
+
+            autoSubmit("You exited the exam. Exam submitted automatically.");
+            e.preventDefault();
+            e.returnValue = "";
+        });
+
+        /* =========================
+           HELPERS
+        ========================= */
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // ✅ Only one validateDetails (no duplicates)
+        function validateDetails() {
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+
+            if (!name) return "Name is required";
+            if (!/^[0-9]{10}$/.test(phone)) return "Enter valid 10-digit phone";
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Enter valid email";
+
+            return null;
+        }
+
+        function updateBadges() {
+            const answeredCount = Object.keys(answers).length;
+            document.getElementById("progressBadge").innerText = `${answeredCount} / ${questions.length}`;
+            document.getElementById("qTotal").innerText = questions.length;
+            document.getElementById("qIndex").innerText = currentIndex + 1;
+
+            document.getElementById("submitBtn").disabled = !(answeredCount === questions.length && questions.length > 0);
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            document.getElementById("questionText").innerText = q.question;
+
+            const wrap = document.getElementById("optionsWrap");
+            wrap.innerHTML = "";
+
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement("div");
+                div.className = "option";
+                div.innerHTML = `
+              <div class="d-flex gap-2">
+                <div class="fw-semibold">${String.fromCharCode(65 + idx)}.</div>
+                <div>${opt}</div>
+              </div>`;
+                if (answers[q.id] === idx) div.classList.add("selected");
+
+                div.addEventListener("click", () => {
+                    if (!examActive || submitted) return;
+                    answers[q.id] = idx;
+                    renderQuestion();
+                    updateBadges();
+                });
+
+                wrap.appendChild(div);
+            });
+
+            document.getElementById("prevBtn").disabled = currentIndex === 0;
+            document.getElementById("nextBtn").disabled = currentIndex === questions.length - 1;
+            updateBadges();
+        }
+
+        function startTimer() {
+            endTime = Date.now() + EXAM_DURATION_MIN * 60 * 1000;
+
+            function tick() {
+                const remaining = Math.max(0, endTime - Date.now());
+                const mm = String(Math.floor(remaining / 60000)).padStart(2, "0");
+                const ss = String(Math.floor((remaining % 60000) / 1000)).padStart(2, "0");
+                document.getElementById("timerBadge").innerText = `Time: ${mm}:${ss}`;
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmit("Time over.");
+                }
+            }
+            tick();
+            timerInterval = setInterval(tick, 1000);
+        }
+
+        function calculateScoreFromAnswers(answersObj) {
+            const totalMarks = QUESTION_BANK.length * MARKS_PER_QUESTION;
+            let correct = 0;
+            let attempted = 0;
+
+            QUESTION_BANK.forEach(q => {
+                const ans = answersObj[q.id];
+                if (typeof ans === "number") {
+                    attempted++;
+                    if (typeof q.correctIndex === "number" && ans === q.correctIndex) correct++;
+                }
+            });
+
+            const score = correct * MARKS_PER_QUESTION;
+            const percentage = totalMarks ? (score / totalMarks) * 100 : 0;
+            const status = percentage >= PASS_PERCENTAGE ? "PASS" : "FAIL";
+            return { score, totalMarks, percentage, status, attempted, correct };
+        }
+
+        /* =========================
+           PDF (always master list + snapshot)
+        ========================= */
+        function addNicFooter(doc, pageW, pageH) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(150);
+            doc.text("Deputy Commissiomer Bidar", pageW / 2, pageH - 12, { align: "center" });
+            doc.text("© 2026", pageW / 2, pageH - 7, { align: "center" });
+            doc.setTextColor(0);
+        }
+
+        function generatePDF(summary, answersSnapshot) {
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+
+            const today = new Date();
+            const todayStr = today.toLocaleString();
+
+            const doc = new jsPDF("p", "mm", "a4");
+            const pageW = doc.internal.pageSize.getWidth();
+            const pageH = doc.internal.pageSize.getHeight();
+            const margin = 14;
+
+            let y = 18;
+
+            // Header
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.text("Multi-Tasking Staff Examination", margin, y);
+
+            y += 6;
+            doc.setDrawColor(180);
+            doc.setLineWidth(0.5);
+            doc.line(margin, y, pageW - margin, y);
+
+            y += 10;
+
+            // Candidate details
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.text(`Name: ${name}`, margin, y); y += 6;
+            doc.text(`Phone: ${phone}`, margin, y); y += 6;
+            doc.text(`Email: ${email}`, margin, y); y += 6;
+            doc.text(`Date & Time: ${todayStr}`, margin, y); y += 10;
+
+            // Summary
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.text("Exam Summary", margin, y); y += 7;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.text(`Total Marks: ${summary.totalMarks}`, margin, y); y += 6;
+            doc.text(`Score: ${summary.score}`, margin, y); y += 6;
+            doc.text(`Percentage: ${summary.percentage.toFixed(2)}%`, margin, y); y += 6;
+            doc.text(`Result: ${summary.status}`, margin, y); y += 6;
+            doc.text(`Attempted: ${summary.attempted} / ${QUESTION_BANK.length}`, margin, y); y += 6;
+            doc.text(`Minimize/Tab Violations: ${minimizeViolations}`, margin, y); y += 6;
+            doc.text(`DevTools Detected: ${devToolsDetected ? "YES" : "NO"}`, margin, y); y += 10;
+
+            // Attempted Questions (from MASTER list)
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.text("Attempted Questions (Only Selected)", margin, y); y += 7;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+
+            const attemptedList = QUESTION_BANK
+                .map(q => {
+                    const a = answersSnapshot[q.id];
+                    if (typeof a !== "number") return null;
+                    return { question: q.question, selected: q.options[a] };
+                })
+                .filter(Boolean);
+
+            if (attemptedList.length === 0) {
+                doc.text("No questions were answered.", margin, y);
+                y += 8;
+            } else {
+                attemptedList.forEach((item, i) => {
+                    const qLines = doc.splitTextToSize(`${i + 1}. ${item.question}`, pageW - margin * 2);
+                    doc.text(qLines, margin, y);
+                    y += (qLines.length * 5) + 2;
+
+                    const aLines = doc.splitTextToSize(`Selected: ${item.selected}`, pageW - margin * 2 - 6);
+                    doc.text(aLines, margin + 6, y);
+                    y += (aLines.length * 5) + 6;
+
+                    if (y > pageH - 55) {
+                        addNicFooter(doc, pageW, pageH);
+                        doc.addPage();
+                        y = 18;
+                        doc.setFont("helvetica", "normal");
+                        doc.setFontSize(11);
+                    }
+                });
+            }
+
+            // Declaration
+            if (y > pageH - 70) {
+                addNicFooter(doc, pageW, pageH);
+                doc.addPage();
+                y = 18;
+            }
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.text("Declaration", margin, y); y += 8;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.text(`I am ${name}. I have attended the exam successfully.`, margin, y); y += 7;
+            doc.text("I don't have any objection for exam and result.", margin, y); y += 14;
+
+            // Signature (medium line)
+            doc.setFont("helvetica", "bold");
+            doc.text("Signature:", margin, y);
+
+            doc.setDrawColor(0);
+            doc.setLineWidth(0.4);
+            doc.line(margin + 25, y, margin + 95, y); // ✅ medium line
+
+            y += 10;
+
+            doc.setFont("helvetica", "normal");
+            doc.text(`Name: ${name}`, margin, y);
+            doc.text(`Date: ${today.toLocaleDateString()}`, pageW - margin - 60, y);
+
+            // Light NIC watermark near bottom
+            doc.setTextColor(235);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(36);
+           /* doc.text("NIC", pageW / 2, pageH - 55, { align: "center" });*/
+            doc.setTextColor(0);
+
+            // Footer
+            addNicFooter(doc, pageW, pageH);
+
+            doc.save(`${name}_Exam_Result.pdf`);
+        }
+
+        /* =========================
+           SUBMIT
+        ========================= */
+        async function submitExam(isAuto = false) {
+            if (submitted) return;
+            submitted = true;
+
+            if (timerInterval) clearInterval(timerInterval);
+            examActive = false;
+            document.getElementById("monitorText").innerText = "Stopped";
+
+            // ✅ snapshot answers NOW (so PDF always correct)
+            const answersSnapshot = JSON.parse(JSON.stringify(answers));
+            const summary = calculateScoreFromAnswers(answersSnapshot);
+
+            // save last submission for download button
+            lastSubmission = { summary, answersSnapshot };
+
+            document.getElementById("stepExam").classList.add("d-none");
+            document.getElementById("stepResult").classList.remove("d-none");
+            document.getElementById("submitMsg").className = "alert alert-success fw-semibold";
+            document.getElementById("submitMsg").innerText = "Submitting... Please wait 2-3 seconds ⏳";
+
+            localStorage.setItem(attemptKey(), "1");
+
+            try {
+                const res = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        secret: SECRET,
+                        name: document.getElementById("name").value.trim(),
+                        phone: document.getElementById("phone").value.trim(),
+                        email: document.getElementById("email").value.trim(),
+                        answers: answersSnapshot, // ✅ send snapshot
+                        score: summary.score,
+                        totalMarks: summary.totalMarks,
+                        percentage: summary.percentage,
+                        status: summary.status,
+                        minimizeCount: minimizeViolations,
+                        devToolsDetected,
+                        isAuto
+                    })
+                });
+
+                const json = await res.json().catch(() => ({}));
+
+                if (!json.ok && json.error === "AlreadyAttempted") {
+                    showPageNotFound();
+                    return;
+                }
+
+                document.getElementById("submitMsg").className = "alert alert-success fw-semibold";
+                document.getElementById("submitMsg").innerText = `✅ Submitted Successfully. Result: ${summary.status}`;
+
+                document.getElementById("downloadPdfBtn").disabled = false;
+                document.getElementById("closeBtn").disabled = false;
+
+                // auto pdf + close
+                setTimeout(() => {
+                    try { generatePDF(summary, answersSnapshot); } catch (e) { }
+                    setTimeout(() => { try { window.open("", "_self"); window.close(); } catch (e) { } }, 1200);
+                }, 800);
+
+            } catch (e) {
+                document.getElementById("submitMsg").className = "alert alert-danger fw-semibold";
+                document.getElementById("submitMsg").innerText = "❌ Submit failed. Please check internet and try again.";
+                localStorage.removeItem(attemptKey());
+                submitted = false;
+            }
+        }
+
+        async function autoSubmit(msg) {
+            if (submitted) return;
+            try { warningModal.hide(); } catch (e) { }
+            await submitExam(true);
+            alert(msg);
+        }
+
+        /* =========================
+           EVENTS (ONLY ONCE)
+        ========================= */
+        document.getElementById("agreeCheck").addEventListener("change", (e) => {
+            document.getElementById("continueBtn").disabled = !e.target.checked;
+        });
+
+        document.getElementById("continueBtn").addEventListener("click", async () => {
+            instructionsModal.hide();
+            document.getElementById("agreeCheck").checked = false;
+            document.getElementById("continueBtn").disabled = true;
+
+            await enableFullScreen();
+
+            questions = shuffleArray(QUESTION_BANK);
+            currentIndex = 0;
+            answers = {};
+            minimizeViolations = 0;
+            devToolsDetected = false;
+            exitWarnedOnce = false;
+
+            document.getElementById("stepDetails").classList.add("d-none");
+            document.getElementById("stepExam").classList.remove("d-none");
+
+            examActive = true;
+            submitted = false;
+            document.getElementById("monitorText").innerText = "Active";
+            document.getElementById("saveStatus").innerText = "In progress";
+
+            renderQuestion();
+            updateBadges();
+            startTimer();
+        });
+
+        // ✅ Start button (single handler, so no double alerts)
+        document.getElementById("startBtn").addEventListener("click", () => {
+            const err = validateDetails();
+            if (err) { alert(err); return; }
+
+            // open modal immediately
+            instructionsModal.show();
+
+            // background check
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+
+            serverCheckAttempt(phone, email)
+                .then(chk => {
+                    if (chk.ok && chk.attempted) {
+                        try { instructionsModal.hide(); } catch (e) { }
+                        localStorage.setItem(attemptKey(), "1");
+                        showPageNotFound();
+                    } else {
+                        localStorage.removeItem(attemptKey());
+                    }
+                })
+                .catch(() => { });
+        });
+
+        document.getElementById("prevBtn").addEventListener("click", () => {
+            if (!examActive || submitted) return;
+            if (currentIndex > 0) currentIndex--;
+            renderQuestion();
+        });
+
+        document.getElementById("nextBtn").addEventListener("click", () => {
+            if (!examActive || submitted) return;
+            if (currentIndex < questions.length - 1) currentIndex++;
+            renderQuestion();
+        });
+
+        // Submit button -> open confirm modal
+        document.getElementById("submitBtn").addEventListener("click", () => {
+            if (!examActive || submitted) return;
+
+            const answeredCount = Object.keys(answers).length;
+            if (answeredCount !== questions.length) {
+                showWarning("Please answer all questions before submitting.");
+                return;
+            }
+            submitConfirmModal.show();
+        });
+
+        // Confirm submit
+        document.getElementById("submitOkBtn").addEventListener("click", async () => {
+            if (!examActive || submitted) return;
+            try { submitConfirmModal.hide(); } catch (e) { }
+            await submitExam(false);
+        });
+
+        // Cancel submit just closes modal (Bootstrap handles)
+        document.getElementById("submitCancelBtn").addEventListener("click", () => { });
+
+        // Download PDF (uses lastSubmission snapshot)
+        document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+            if (!lastSubmission) return;
+            generatePDF(lastSubmission.summary, lastSubmission.answersSnapshot);
+            setTimeout(() => {
+                try { window.open("", "_self"); window.close(); } catch (e) { }
+            }, 1200);
+        });
+
+        document.getElementById("closeBtn").addEventListener("click", () => {
+            try { window.open("", "_self"); window.close(); } catch (e) { alert("Please close the tab manually."); }
+        });
+
+        // boot
+        (function boot() {
+            showMain();
+        })();
+    </script>
+</body>
+</html>
